@@ -8,13 +8,22 @@ Easily cross-compile lua executable files for different platforms, without the n
 zig build
 ```
 
-Cross-compile, for example, compile exe files on Linux
+This whill cross-compile all support platform. Output files are in the zig-out directory.
 
-```bash
-zig build -Dtarget=x86_64-windows
 ```
-
-Output files are in the zig-out directory
+[4.0K]  zig-out/
+├── [4.0K]  aarch64-linux
+│   └── [3.0M]  lua
+├── [4.0K]  aarch64-macos
+│   └── [418K]  lua         
+├── [4.0K]  x86_64-linux-gnu
+│   └── [1.8M]  lua
+├── [4.0K]  x86_64-linux-musl
+│   └── [2.3M]  lua
+└── [4.0K]  x86_64-windows
+    ├── [572K]  lua.exe
+    └── [1.6M]  lua.pdb
+```
 
 ## References
   
@@ -32,13 +41,23 @@ zig build
 ```
 
 
-交叉编译，比如在 Linux 下编译 exe 文件
+交叉编译，可以一次性编译出所有平台的 Lua 可执行文件。输出文件在 zig-out 目录。
 
-```bash
-zig build -Dtarget=x86_64-windows
+```
+[4.0K]  zig-out/
+├── [4.0K]  aarch64-linux
+│   └── [3.0M]  lua
+├── [4.0K]  aarch64-macos
+│   └── [418K]  lua         
+├── [4.0K]  x86_64-linux-gnu
+│   └── [1.8M]  lua
+├── [4.0K]  x86_64-linux-musl
+│   └── [2.3M]  lua
+└── [4.0K]  x86_64-windows
+    ├── [572K]  lua.exe
+    └── [1.6M]  lua.pdb
 ```
 
-输出文件在 zig-out 目录
 
 ## 参考
 
