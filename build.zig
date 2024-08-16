@@ -17,11 +17,19 @@ pub fn build(b: *std.Build) !void {
             .optimize = .ReleaseSafe,
         });
 
+        lua.rdynamic = true;
         lua.linkLibC();
 
         const flags = [_][]const u8{
             // Standard version used in Lua Makefile
             "-std=gnu99",
+            // Define target-specific macro
+            switch (target.result.os.tag) {
+                .linux => "-DLUA_USE_LINUX",
+                .macos => "-DLUA_USE_MACOSX",
+                .windows => "-DLUA_USE_WINDOWS",
+                else => "-DLUA_USE_POSIX",
+            },
         };
 
         const lua_src_path = "lua-5.4.6/src";
