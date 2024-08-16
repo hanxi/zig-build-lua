@@ -32,7 +32,10 @@ pub fn build(b: *std.Build) !void {
             },
         };
 
-        const lua_src_path = "lua-5.4.6/src";
+        const lua_src = b.dependency("lua", .{});
+        lua.addIncludePath(lua_src.path("src"));
+
+        const lua_src_path = lua_src.path("src").getPath(b);
         var dir = try std.fs.cwd().openDir(lua_src_path, .{ .iterate = true });
         defer dir.close();
 
