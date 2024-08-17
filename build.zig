@@ -1,11 +1,11 @@
 const std = @import("std");
 
 const targets: []const std.Target.Query = &.{
+    .{ .cpu_arch = .x86_64, .os_tag = .windows },
     .{ .cpu_arch = .aarch64, .os_tag = .macos },
     .{ .cpu_arch = .aarch64, .os_tag = .linux },
-    .{ .cpu_arch = .x86_64, .os_tag = .linux, .abi = .gnu },
     .{ .cpu_arch = .x86_64, .os_tag = .linux, .abi = .musl },
-    .{ .cpu_arch = .x86_64, .os_tag = .windows },
+    .{ .cpu_arch = .x86_64, .os_tag = .linux, .abi = .gnu },
 };
 
 pub fn build(b: *std.Build) !void {
@@ -35,6 +35,9 @@ pub fn build(b: *std.Build) !void {
         const lua_src = b.dependency("lua", .{});
         lua.addIncludePath(lua_src.path("src"));
 
+        var c_source_files = std.ArrayList([]const u8).init(b.allocator);
+        defer c_source_files.deinit();
+
         const lua_src_path = lua_src.path("src").getPath(b);
         var dir = try std.fs.cwd().openDir(lua_src_path, .{ .iterate = true });
         defer dir.close();
@@ -49,9 +52,15 @@ pub fn build(b: *std.Build) !void {
                 continue;
             }
             if (std.mem.endsWith(u8, file_name, ".c")) {
-                lua.addCSourceFile(.{ .file = .{ .cwd_relative = b.pathJoin(&.{ lua_src_path, file_name }) }, .flags = &flags });
+                try c_source_files.append(b.pathJoin(&.{file_name}));
             }
         }
+
+        lua.addCSourceFiles(.{
+            .root = lua_src.path("src"),
+            .files = c_source_files.items,
+            .flags = &flags,
+        });
 
         const target_output = b.addInstallArtifact(lua, .{
             .dest_dir = .{
